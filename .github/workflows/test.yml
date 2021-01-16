@@ -1,0 +1,16 @@
+name: Test
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@master
+      - uses: actions/setup-java@master
+        with:
+          java-version: "12.x"
+      - uses: subosito/flutter-action@v1
+
+      - run: flutter pub get
+      - run: flutter test

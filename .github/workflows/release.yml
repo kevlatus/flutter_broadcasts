@@ -1,0 +1,35 @@
+name: Release package
+on:
+  push:
+    branches:
+      - releases/v*
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@master
+      - uses: actions/setup-java@master
+        with:
+          java-version: "12.x"
+      - uses: subosito/flutter-action@v1
+
+      - run: flutter pub get
+      - run: flutter test
+
+      # retrieve secrets from ~/.pub-cache/credentials.json or $FLUTTER_ROOT/.pub-cache/credentials.json
+      - name: setup pub credentials
+        run: |
+          mkdir -p "$FLUTTER_HOME/.pub-cache"
+          cat <<EOF > "$FLUTTER_HOME/.pub-cache/credentials.json"
+          {
+            "accessToken":"${{ secrets.OAUTH_ACCESS_TOKEN }}",
+            "refreshToken":"${{ secrets.OAUTH_REFRESH_TOKEN }}",
+            "tokenEndpoint":"https://accounts.google.com/o/oauth2/token",
+            "scopes": [ "openid", "https://www.googleapis.com/auth/userinfo.email" ],
+            "expiration": 1570721159347
+          }
+          EOF
+      - name: publish to pub.dev
+        run: flutter pub publish -f
