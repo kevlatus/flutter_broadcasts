@@ -1,3 +1,6 @@
+[![](https://img.shields.io/pub/v/flutter_broadcasts)](https://pub.dev/packages/flutter_broadcasts)
+[![Coverage Status](https://coveralls.io/repos/github/kevlatus/flutter_broadcasts/badge.svg?branch=main)](https://coveralls.io/github/kevlatus/flutter_broadcasts?branch=main)
+
 # Flutter Broadcasts
 
 A plugin for sending and receiving broadcasts with Android intents and iOS notifications. The API is inspired by Android's [BroadcastReceivers](https://developer.android.com/reference/android/content/BroadcastReceiver) and uses the [NotificationCenter](https://developer.apple.com/documentation/foundation/notificationcenter) internally on iOS.
