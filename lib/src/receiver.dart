@@ -11,12 +11,15 @@ class BroadcastReceiver {
   static int _index = 0;
 
   final int _id;
-  Stream<BroadcastMessage> _messages;
+  final StreamController<BroadcastMessage> _messages =
+      StreamController<BroadcastMessage>.broadcast();
 
   /// A list of message names to subscribe to.
   ///
   /// See [BroadcastMessage.name] for more details.
   final List<String> names;
+
+  StreamSubscription _subscription;
 
   /// Creates a new [BroadcastReceiver], which subscribes to the given [names].
   ///
@@ -25,36 +28,36 @@ class BroadcastReceiver {
       : assert(names != null && names.length > 0),
         _id = ++_index;
 
-  /// A stream of matching messages received from the native platform.
-  ///
-  /// If this [BroadcastReceiver] is stopped, this returns [Stream.empty].
-  Stream<BroadcastMessage> get messages =>
-      _messages ?? Stream<BroadcastMessage>.empty();
-
   /// Returns true, if this [BroadcastReceiver] is currently listening for messages.
-  bool get isStarted => _messages != null;
+  bool get isListening => _subscription != null;
+
+  /// A stream of matching messages received from the native platform.
+  Stream<BroadcastMessage> get messages => _messages.stream.asBroadcastStream();
 
   /// Starts listening for messages on this [BroadcastReceiver].
   ///
   /// Throws a [StateError], if it is already listening.
   Future<void> start() async {
-    if (isStarted) {
+    if (isListening) {
       throw StateError('This BroadcastReceiver is already started.');
     }
 
-    _messages = _BroadcastChannel.instance.startReceiver(this);
+    final stream = _BroadcastChannel.instance.startReceiver(this);
+    _subscription = stream.listen((event) {
+      _messages.add(event);
+    });
   }
 
-  /// Stops listening for messages on this [BroadcastReceiver].
-  ///
-  /// Throws a [StateError], if it is not yet listening.
+  /// Stops listening for messages on this [BroadcastReceiver], preventing it
+  /// from being started again.
   Future<void> stop() async {
-    if (!isStarted) {
-      throw StateError('This BroadcastReceiver is not yet started.');
+    if (!isListening) {
+      return;
     }
 
     await _BroadcastChannel.instance.stopReceiver(this);
-    _messages = null;
+    await _subscription.cancel();
+    _subscription = null;
   }
 
   Map<String, dynamic> toMap() => <String, dynamic>{
@@ -68,13 +71,14 @@ class BroadcastReceiver {
   }
 
   @override
-  int get hashCode => hash3(_id, names, _messages);
+  int get hashCode => hash4(_id, names, _subscription, _messages);
 
   @override
   bool operator ==(Object other) {
     return other is BroadcastReceiver &&
         other._id == _id &&
         other.names == names &&
-        other._messages == _messages;
+        other._messages == _messages &&
+        other._subscription == _subscription;
   }
 }

@@ -1,5 +1,4 @@
 [![](https://img.shields.io/pub/v/flutter_broadcasts)](https://pub.dev/packages/flutter_broadcasts)
-[![Coverage Status](https://coveralls.io/repos/github/kevlatus/flutter_broadcasts/badge.svg?branch=main)](https://coveralls.io/github/kevlatus/flutter_broadcasts?branch=main)
 
 # Flutter Broadcasts
 
@@ -22,7 +21,7 @@ receiver.start();
 This package is currently under construction. Below you can find a quick overview of its implementation status. Contributions are welcome, if you are missing features.
 
 - [x] implement broadcast receiver on Android
-- [ ] implement broadcast sending on Android
+- [x] implement broadcast sending on Android
 - [ ] implement NSNotificationCenter subscriptions on iOS
 - [ ] implement NSNotificationCenter notifications on iOS
 

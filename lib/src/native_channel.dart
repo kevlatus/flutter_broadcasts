@@ -13,7 +13,8 @@ Stream<BroadcastMessage> _listenForBroadcasts(MethodChannel channel) {
   void startListening() {
     channel.setMethodCallHandler((MethodCall call) async {
       if (call.method == 'receiveBroadcast') {
-        controller?.add(BroadcastMessage._fromMap(call.arguments));
+        final message = BroadcastMessage._fromMap(call.arguments);
+        controller?.add(message);
       }
     });
   }
@@ -60,6 +61,18 @@ class _BroadcastChannel {
   Future<void> stopReceiver(BroadcastReceiver receiver) async {
     final String result =
         await _channel.invokeMethod('stopReceiver', receiver.toMap());
+
+    if (result != null) {
+      throw FlutterError(result);
+    }
+  }
+
+  /// Sends the given broadcast [message] natively.
+  Future<void> sendBroadcast(BroadcastMessage message) async {
+    final String result = await _channel.invokeMethod(
+      "sendBroadcast",
+      message.toMap(),
+    );
 
     if (result != null) {
       throw FlutterError(result);

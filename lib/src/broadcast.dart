@@ -60,12 +60,16 @@ class BroadcastMessage {
             ? DateTime.fromMillisecondsSinceEpoch(map['timestamp'])
             : null;
 
+  Future<void> send() {
+    return _BroadcastChannel.instance.sendBroadcast(this);
+  }
+
   /// Creates a [Map] containing all information about this message.
   Map<String, dynamic> toMap() => <String, dynamic>{
         'receiverId': _receiverId,
         'name': name,
         'data': data,
-        'timestamp': timestamp,
+        'timestamp': timestamp?.toIso8601String(),
       };
 
   @override

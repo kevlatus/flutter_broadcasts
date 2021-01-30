@@ -18,14 +18,14 @@ void _testMain() {
     // Build our app and trigger a frame.
     app.main();
 
-    // Trigger a frame.
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(TextButton));
     await tester.pumpAndSettle();
 
-    // Verify that platform version is retrieved.
     expect(
       find.byWidgetPredicate(
-        (Widget widget) => widget is Text &&
-                           widget.data.startsWith('Running on:'),
+        (Widget widget) =>
+            widget is Text && widget.data.startsWith('de.kevlatus'),
       ),
       findsOneWidget,
     );
