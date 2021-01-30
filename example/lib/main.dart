@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'dart:async';
-
-import 'package:flutter/services.dart';
 import 'package:flutter_broadcasts/flutter_broadcasts.dart';
 
 void main() async {
@@ -17,13 +14,21 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   BroadcastReceiver receiver = BroadcastReceiver(
     names: <String>[
-      "com.spotify.music.playbackstatechanged",
+      "de.kevlatus.flutter_broadcasts_example.demo_action",
     ],
   );
 
   @override
   void initState() {
     super.initState();
+    receiver.start();
+    receiver.messages.listen(print);
+  }
+
+  @override
+  void dispose() {
+    receiver.stop();
+    super.dispose();
   }
 
   @override
@@ -33,42 +38,34 @@ class _MyAppState extends State<MyApp> {
         appBar: AppBar(
           title: const Text('Broadcasts Demo'),
         ),
-        body: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              TextButton(
-                child: Text('Toggle Spotify Receiver'),
-                onPressed: () {
-                  if (receiver.isStarted) {
-                    receiver.stop();
-                  } else {
-                    receiver.start();
-                  }
-                  setState(() {});
-                },
-              ),
-              StreamBuilder<BroadcastMessage>(
-                initialData: null,
-                stream: receiver.messages,
-                builder: (context, snapshot) {
-                  print(snapshot.data);
-                  switch (snapshot.connectionState) {
-                    case ConnectionState.active:
-                      return Text(
-                          'Now playing: ${snapshot.data.data['track']}');
+        body: Column(
+          children: [
+            TextButton(
+              child: Text('Send Broadcast'),
+              onPressed: () {
+                BroadcastMessage(
+                  name: "de.kevlatus.flutter_broadcasts_example.demo_action",
+                ).send();
+              },
+            ),
+            StreamBuilder<BroadcastMessage>(
+              initialData: null,
+              stream: receiver.messages,
+              builder: (context, snapshot) {
+                print(snapshot.data);
+                switch (snapshot.connectionState) {
+                  case ConnectionState.active:
+                    return Text(snapshot.data.name);
 
-                    case ConnectionState.none:
-                    case ConnectionState.done:
-                    case ConnectionState.waiting:
-                    default:
-                      return SizedBox();
-                  }
-                },
-              ),
-            ],
-          ),
+                  case ConnectionState.none:
+                  case ConnectionState.done:
+                  case ConnectionState.waiting:
+                  default:
+                    return SizedBox();
+                }
+              },
+            ),
+          ],
         ),
       ),
     );
