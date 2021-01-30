@@ -65,7 +65,7 @@ class BroadcastMessage {
         'receiverId': _receiverId,
         'name': name,
         'data': data,
-        'timestamp': timestamp,
+        'timestamp': timestamp?.toIso8601String(),
       };
 
   @override
