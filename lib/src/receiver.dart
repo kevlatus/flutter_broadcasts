@@ -50,11 +50,9 @@ class BroadcastReceiver {
 
   /// Stops listening for messages on this [BroadcastReceiver], preventing it
   /// from being started again.
-  ///
-  /// Throws a [StateError], if it is not yet listening.
   Future<void> stop() async {
     if (!isListening) {
-      throw StateError('This BroadcastReceiver is not yet started.');
+      return;
     }
 
     await _BroadcastChannel.instance.stopReceiver(this);
