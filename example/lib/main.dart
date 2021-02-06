@@ -43,9 +43,11 @@ class _MyAppState extends State<MyApp> {
             TextButton(
               child: Text('Send Broadcast'),
               onPressed: () {
-                BroadcastMessage(
-                  name: "de.kevlatus.flutter_broadcasts_example.demo_action",
-                ).send();
+                sendBroadcast(
+                  BroadcastMessage(
+                    name: "de.kevlatus.flutter_broadcasts_example.demo_action",
+                  ),
+                );
               },
             ),
             StreamBuilder<BroadcastMessage>(
