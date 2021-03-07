@@ -7,7 +7,7 @@ part of 'flutter_broadcasts.dart';
 class BroadcastMessage {
   /// The [BroadcastReceiver._id] of the [BroadcastReceiver], which is
   /// subscribing to messages of this type.
-  final int _receiverId;
+  final int? _receiverId;
 
   /// A name, which specifies the type of this message.
   ///
@@ -25,7 +25,7 @@ class BroadcastMessage {
   ///
   /// On iOS, [data] is retrieved from [NSNotification.userInfo](https://developer.apple.com/documentation/foundation/nsnotification/1409222-userinfo)
   /// and sent using the same property.
-  final Map<String, dynamic> data;
+  final Map<String, dynamic>? data;
 
   /// The timestamp when this message was sent or retrieved.
   ///
@@ -42,14 +42,13 @@ class BroadcastMessage {
   /// tries its best to record consistent timestamps. If you rely on this
   /// information, you should also check the docs for the messages you receive
   /// for hints about timestamps.
-  final DateTime timestamp;
+  final DateTime? timestamp;
 
   /// Creates a new [BroadcastMessage], which can be sent using [sendBroadcast].
   BroadcastMessage({
-    @required this.name,
+    required this.name,
     this.data,
-  })  : assert(name != null),
-        timestamp = DateTime.now(),
+  })  : timestamp = DateTime.now(),
         _receiverId = null;
 
   BroadcastMessage._fromMap(Map<dynamic, dynamic> map)
