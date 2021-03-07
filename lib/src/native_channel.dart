@@ -8,7 +8,7 @@ part of 'flutter_broadcasts.dart';
 /// listening on the [channel] is also paused.
 Stream<BroadcastMessage> _listenForBroadcasts(MethodChannel channel) {
   // ignore: close_sinks
-  StreamController<BroadcastMessage> controller;
+  StreamController<BroadcastMessage>? controller;
 
   void startListening() {
     channel.setMethodCallHandler((MethodCall call) async {
@@ -47,7 +47,7 @@ class _BroadcastChannel {
   final Stream<BroadcastMessage> _messages = _listenForBroadcasts(_channel);
 
   Stream<BroadcastMessage> startReceiver(BroadcastReceiver receiver) async* {
-    final String result =
+    final String? result =
         await _channel.invokeMethod('startReceiver', receiver.toMap());
 
     if (result != null) {
@@ -59,7 +59,7 @@ class _BroadcastChannel {
 
   /// Stops listening on a given [BroadcastReceiver].
   Future<void> stopReceiver(BroadcastReceiver receiver) async {
-    final String result =
+    final String? result =
         await _channel.invokeMethod('stopReceiver', receiver.toMap());
 
     if (result != null) {
@@ -69,7 +69,7 @@ class _BroadcastChannel {
 
   /// Sends the given broadcast [message] natively.
   Future<void> sendBroadcast(BroadcastMessage message) async {
-    final String result = await _channel.invokeMethod(
+    final String? result = await _channel.invokeMethod(
       "sendBroadcast",
       message.toMap(),
     );

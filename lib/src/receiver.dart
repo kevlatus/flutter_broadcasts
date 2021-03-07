@@ -19,12 +19,12 @@ class BroadcastReceiver {
   /// See [BroadcastMessage.name] for more details.
   final List<String> names;
 
-  StreamSubscription _subscription;
+  StreamSubscription? _subscription;
 
   /// Creates a new [BroadcastReceiver], which subscribes to the given [names].
   ///
   /// At least one name needs to be provided.
-  BroadcastReceiver({@required this.names})
+  BroadcastReceiver({required this.names})
       : assert(names != null && names.length > 0),
         _id = ++_index;
 
@@ -56,7 +56,7 @@ class BroadcastReceiver {
     }
 
     await _BroadcastChannel.instance.stopReceiver(this);
-    await _subscription.cancel();
+    await _subscription!.cancel();
     _subscription = null;
   }
 
@@ -71,14 +71,19 @@ class BroadcastReceiver {
   }
 
   @override
-  int get hashCode => hash4(_id, names, _subscription, _messages);
+  int get hashCode =>
+      _id.hashCode ^
+      names.hashCode ^
+      _subscription.hashCode ^
+      _messages.hashCode;
 
   @override
   bool operator ==(Object other) {
-    return other is BroadcastReceiver &&
-        other._id == _id &&
-        other.names == names &&
-        other._messages == _messages &&
-        other._subscription == _subscription;
+    return identical(this, other) ||
+        other is BroadcastReceiver &&
+            other._id == _id &&
+            other.names == names &&
+            other._messages == _messages &&
+            other._subscription == _subscription;
   }
 }
