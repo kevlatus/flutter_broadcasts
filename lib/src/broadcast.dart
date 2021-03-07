@@ -74,15 +74,17 @@ class BroadcastMessage {
   }
 
   @override
-  int get hashCode => hash3(name, data, timestamp);
+  int get hashCode =>
+      _receiverId.hashCode ^ name.hashCode ^ data.hashCode ^ timestamp.hashCode;
 
   @override
   bool operator ==(Object other) {
-    return other is BroadcastMessage &&
-        _receiverId == other._receiverId &&
-        name == other.name &&
-        data == other.data &&
-        timestamp == other.timestamp;
+    return identical(this, other) ||
+        other is BroadcastMessage &&
+            _receiverId == other._receiverId &&
+            name == other.name &&
+            data == other.data &&
+            timestamp == other.timestamp;
   }
 }
 
