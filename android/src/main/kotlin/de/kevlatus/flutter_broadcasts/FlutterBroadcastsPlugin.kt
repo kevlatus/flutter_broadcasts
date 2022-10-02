@@ -40,7 +40,7 @@ class CustomBroadcastReceiver(
             listener(mapOf(
                     "receiverId" to id,
                     "name" to it.action!!,
-                    "data" to data
+                    "data" to normalize(data)
             ))
         }
     }
@@ -208,6 +208,57 @@ class FlutterBroadcastsPlugin : FlutterPlugin {
         methodCallHandler = null
         broadcastManager?.stopAll()
         broadcastManager = null
+    }    
+}
+
+/***
+ * Normalize the intent data to types that Flutter's StandardMessageCodec can pass.
+ *
+ * Flutter's StandardMessageCodec is the mechanism used for passing intent contents to the Flutter
+ * layer. As only specific types are supported by it, other types are normalized to their String
+ * representation.
+ *
+ * This code should be updated when Flutter Engine's code supports additional types.
+ * See https://github.com/flutter/engine/blob/main/shell/platform/android/io/flutter/plugin/common/StandardMessageCodec.java
+ */
+private fun normalize(x: Any?) : Any? {
+	if (
+        x == null 
+        || x.equals(null)
+        || x is Boolean
+        || x is Int
+        || x is Short
+        || x is Byte
+        || x is Long
+        || x is Float
+        || x is Double
+        || x is java.math.BigInteger
+        || x is CharSequence
+        || x is ByteArray
+        || x is IntArray
+        || x is LongArray
+        || x is DoubleArray
+        || x is FloatArray
+    ) {
+    	return x
+    } else if (x is List<*>) {
+        return normalizeList(x)
+    } else if (x is Map<*, *>) {
+    	return normalizeMap(x)
+    } else {
+        return x.toString()
     }
 }
 
+private fun <V> normalizeList(x: List<V>) : List<Any?> {
+    return x.map { item ->
+    	normalize(item)
+    }
+}
+
+private fun <K, V> normalizeMap(x: Map<K, V>) : Map<K, Any?> {
+    val pairs = x.keys.map { key ->
+        Pair(key, normalize(x[key]))
+    }
+    return pairs.toMap()
+}
