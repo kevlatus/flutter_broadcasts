@@ -1,3 +1,7 @@
+## 0.4.0
+
+* Fix duplicated listeners by removing .asBroadcastStream
+
 ## 0.3.0
 
 * Fix Android crash by normalizing broadcast intent data
