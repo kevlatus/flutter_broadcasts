@@ -32,7 +32,7 @@ class BroadcastReceiver {
   bool get isListening => _subscription != null;
 
   /// A stream of matching messages received from the native platform.
-  Stream<BroadcastMessage> get messages => _messages.stream.asBroadcastStream();
+  Stream<BroadcastMessage> get messages => _messages.stream;
 
   /// Starts listening for messages on this [BroadcastReceiver].
   ///
