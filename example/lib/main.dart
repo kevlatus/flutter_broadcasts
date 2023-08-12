@@ -57,7 +57,7 @@ class _MyAppState extends State<MyApp> {
                 print(snapshot.data);
                 switch (snapshot.connectionState) {
                   case ConnectionState.active:
-                    return Text(snapshot.data.name);
+                    return Text(snapshot.data?.name ?? '');
 
                   case ConnectionState.none:
                   case ConnectionState.done:

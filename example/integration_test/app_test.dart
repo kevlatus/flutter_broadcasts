@@ -11,9 +11,9 @@ import 'package:integration_test/integration_test.dart';
 
 import 'package:flutter_broadcasts_example/main.dart' as app;
 
-void main() => run(_testMain);
+void main() {
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-void _testMain() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     app.main();
@@ -25,7 +25,7 @@ void _testMain() {
     expect(
       find.byWidgetPredicate(
         (Widget widget) =>
-            widget is Text && widget.data.startsWith('de.kevlatus'),
+            widget is Text && (widget.data?.startsWith('de.kevlatus') ?? false),
       ),
       findsOneWidget,
     );
