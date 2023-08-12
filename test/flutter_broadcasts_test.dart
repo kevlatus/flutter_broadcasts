@@ -34,7 +34,8 @@ void main() {
         MethodChannel('de.kevlatus.flutter_broadcasts');
 
     setUp(() {
-      channel.setMockMethodCallHandler((MethodCall methodCall) async {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
         switch (methodCall.method) {
           case "startReceiver":
             return null;
@@ -46,7 +47,8 @@ void main() {
     });
 
     tearDown(() {
-      channel.setMockMethodCallHandler(null);
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, null);
     });
 
     test("beforeStart", () async {
@@ -72,12 +74,12 @@ void main() {
       // );
     });
 
-    test("stop", () {
-      final receiver = BroadcastReceiver(names: <String>["broadcast.name"]);
-    });
+    // test("stop", () {
+    //   final receiver = BroadcastReceiver(names: <String>["broadcast.name"]);
+    // });
 
-    test("toMap", () {
-      final receiver = BroadcastReceiver(names: <String>["broadcast.name"]);
-    });
+    // test("toMap", () {
+    //   final receiver = BroadcastReceiver(names: <String>["broadcast.name"]);
+    // });
   });
 }
