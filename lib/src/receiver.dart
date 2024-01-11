@@ -20,11 +20,12 @@ class BroadcastReceiver {
   final List<String> names;
 
   StreamSubscription? _subscription;
+  final bool exported;
 
   /// Creates a new [BroadcastReceiver], which subscribes to the given [names].
   ///
   /// At least one name needs to be provided.
-  BroadcastReceiver({required this.names})
+  BroadcastReceiver({required this.names, this.exported = false})
       : assert(names.length > 0),
         _id = ++_index;
 
@@ -63,6 +64,7 @@ class BroadcastReceiver {
   Map<String, dynamic> toMap() => <String, dynamic>{
         'id': _id,
         'names': names,
+        'exported': exported ? 1 : 0,
       };
 
   @override

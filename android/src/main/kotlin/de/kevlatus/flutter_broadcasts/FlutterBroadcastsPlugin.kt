@@ -17,6 +17,7 @@ import java.io.Serializable
 class CustomBroadcastReceiver(
         val id: Int,
         private val names: List<String>,
+        private val exported: Int,
         private val listener: (Any) -> Unit
 ) : BroadcastReceiver() {
     companion object {
@@ -46,7 +47,11 @@ class CustomBroadcastReceiver(
     }
 
     fun start(context: Context) {
-        context.registerReceiver(this, intentFilter)
+        if (exported == 1) {
+            context.registerReceiver(this, intentFilter, Context.RECEIVER_EXPORTED)
+        } else {
+            context.registerReceiver(this, intentFilter, Context.RECEIVER_NOT_EXPORTED)
+        }
         Log.d(TAG, "starting to listen for broadcasts: " + names.joinToString(";"))
     }
 
@@ -95,7 +100,7 @@ class MethodCallHandlerImpl(
     private fun withReceiverArgs(
             call: MethodCall,
             result: Result,
-            func: (id: Int, names: List<String>) -> Unit
+            func: (id: Int, names: List<String>, exported: Int) -> Unit
     ) {
         val id = call.argument<Int>("id")
                 ?: return result.error("1", "no receiver id provided", null)
@@ -103,7 +108,9 @@ class MethodCallHandlerImpl(
         val names = call.argument<List<String>>("names")
                 ?: return result.error("1", "no names provided", null)
 
-        func(id, names)
+        val exported = call.argument<Int>("exported") ?: 0
+
+        func(id, names, exported)
     }
 
     private fun withBroadcastArgs(
@@ -118,8 +125,8 @@ class MethodCallHandlerImpl(
     }
 
     private fun onStartReceiver(call: MethodCall, result: Result) {
-        withReceiverArgs(call, result) { id, names ->
-            broadcastManager.startReceiver(CustomBroadcastReceiver(id, names) { broadcast ->
+        withReceiverArgs(call, result) { id, names, exported ->
+            broadcastManager.startReceiver(CustomBroadcastReceiver(id, names, exported) { broadcast ->
                 channel?.invokeMethod("receiveBroadcast", broadcast)
             })
             result.success(null)
@@ -127,7 +134,7 @@ class MethodCallHandlerImpl(
     }
 
     private fun onStopReceiver(call: MethodCall, result: Result) {
-        withReceiverArgs(call, result) { id, _ ->
+        withReceiverArgs(call, result) { id, _, _ ->
             broadcastManager.stopReceiver(id)
             result.success(null)
         }
