@@ -19,14 +19,23 @@ rootProject.allprojects {
         google()
         jcenter()
     }
+
 }
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
 android {
+    namespace  "de.kevlatus.flutter_broadcasts"
     compileSdkVersion 31
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
 
+    kotlin {
+        jvmToolchain(17)
+    }
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
