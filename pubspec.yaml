@@ -1,7 +1,7 @@
-name: flutter_broadcasts
+name: flutter_broadcasts_4m
 description: A plugin for sending and receiving broadcasts with Android intents and iOS notifications.
-version: 0.4.0
-repository: https://github.com/kevlatus/flutter_broadcasts
+version: 0.4.2
+repository: https://github.com/4murs/flutter_broadcasts
 
 environment:
   sdk: ">=2.12.0 <4.0.0"
