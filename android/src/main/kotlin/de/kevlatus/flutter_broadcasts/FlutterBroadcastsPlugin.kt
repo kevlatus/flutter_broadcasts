@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.os.Build
 import android.util.Log
 import androidx.annotation.NonNull
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -17,6 +18,7 @@ import java.io.Serializable
 class CustomBroadcastReceiver(
         val id: Int,
         private val names: List<String>,
+        private val listenToBroadcastsFromOtherApps: Boolean,
         private val listener: (Any) -> Unit
 ) : BroadcastReceiver() {
     companion object {
@@ -46,7 +48,17 @@ class CustomBroadcastReceiver(
     }
 
     fun start(context: Context) {
-        context.registerReceiver(this, intentFilter)
+        if (Build.VERSION.SDK_INT >= 33) {
+            val receiverFlags = if (listenToBroadcastsFromOtherApps) {
+                Context.RECEIVER_EXPORTED
+            } else {
+                Context.RECEIVER_NOT_EXPORTED
+            }
+            context.registerReceiver(this, intentFilter, receiverFlags)
+        } else {
+            context.registerReceiver(this, intentFilter)
+        }
+
         Log.d(TAG, "starting to listen for broadcasts: " + names.joinToString(";"))
     }
 
@@ -95,7 +107,7 @@ class MethodCallHandlerImpl(
     private fun withReceiverArgs(
             call: MethodCall,
             result: Result,
-            func: (id: Int, names: List<String>) -> Unit
+            func: (id: Int, names: List<String>, listenToBroadcastsFromOtherApps: Boolean) -> Unit
     ) {
         val id = call.argument<Int>("id")
                 ?: return result.error("1", "no receiver id provided", null)
@@ -103,7 +115,10 @@ class MethodCallHandlerImpl(
         val names = call.argument<List<String>>("names")
                 ?: return result.error("1", "no names provided", null)
 
-        func(id, names)
+        val listenToBroadcastsFromOtherApps = call.argument<Boolean>("listenToBroadcastsFromOtherApps")
+            ?: return result.error("1", "listenToBroadcastsFromOtherApps is not provided", null)
+
+        func(id, names, listenToBroadcastsFromOtherApps)
     }
 
     private fun withBroadcastArgs(
@@ -118,8 +133,8 @@ class MethodCallHandlerImpl(
     }
 
     private fun onStartReceiver(call: MethodCall, result: Result) {
-        withReceiverArgs(call, result) { id, names ->
-            broadcastManager.startReceiver(CustomBroadcastReceiver(id, names) { broadcast ->
+        withReceiverArgs(call, result) { id, names, listenToBroadcastsFromOtherApps ->
+            broadcastManager.startReceiver(CustomBroadcastReceiver(id, names, listenToBroadcastsFromOtherApps) { broadcast ->
                 channel?.invokeMethod("receiveBroadcast", broadcast)
             })
             result.success(null)
@@ -127,7 +142,7 @@ class MethodCallHandlerImpl(
     }
 
     private fun onStopReceiver(call: MethodCall, result: Result) {
-        withReceiverArgs(call, result) { id, _ ->
+        withReceiverArgs(call, result) { id, _, _ ->
             broadcastManager.stopReceiver(id)
             result.success(null)
         }

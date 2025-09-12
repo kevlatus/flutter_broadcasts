@@ -19,12 +19,20 @@ class BroadcastReceiver {
   /// See [BroadcastMessage.name] for more details.
   final List<String> names;
 
+  /// Allow receiver to listen to broadcasts from other apps
+  ///
+  /// Android specific. Requires SDK 33+
+  final bool listenToBroadcastsFromOtherApps;
+
   StreamSubscription? _subscription;
 
   /// Creates a new [BroadcastReceiver], which subscribes to the given [names].
   ///
   /// At least one name needs to be provided.
-  BroadcastReceiver({required this.names})
+  BroadcastReceiver({
+    required this.names,
+    this.listenToBroadcastsFromOtherApps = true,
+  })
       : assert(names.length > 0),
         _id = ++_index;
 
@@ -63,6 +71,7 @@ class BroadcastReceiver {
   Map<String, dynamic> toMap() => <String, dynamic>{
         'id': _id,
         'names': names,
+        'listenToBroadcastsFromOtherApps': listenToBroadcastsFromOtherApps,
       };
 
   @override
@@ -74,6 +83,7 @@ class BroadcastReceiver {
   int get hashCode =>
       _id.hashCode ^
       names.hashCode ^
+      listenToBroadcastsFromOtherApps.hashCode ^
       _subscription.hashCode ^
       _messages.hashCode;
 
@@ -83,6 +93,7 @@ class BroadcastReceiver {
         other is BroadcastReceiver &&
             other._id == _id &&
             other.names == names &&
+            other.listenToBroadcastsFromOtherApps == listenToBroadcastsFromOtherApps &&
             other._messages == _messages &&
             other._subscription == _subscription;
   }

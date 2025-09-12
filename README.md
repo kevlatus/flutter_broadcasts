@@ -11,6 +11,7 @@ First install the package via [pub.dev](https://pub.dev/packages/flutter_broadca
 ```dart
 BroadcastReceiver receiver = BroadcastReceiver(
   names: <String>["de.kevlatus.broadcast"],
+  listenToBroadcastsFromOtherApps: false,
 );
 receiver.messages.listen(print);
 receiver.start();
